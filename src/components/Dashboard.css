@@ -1,0 +1,33 @@
+/* Dashboard.css */
+.dashboard-container {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .dashboard-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+
+  .stat {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .stat-label {
+    font-size: 14px;
+    color: #666;
+    margin-top: 5px;
+  }
