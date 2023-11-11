@@ -7,19 +7,18 @@ import {
 } from "react-router-dom";
 
 // import { defaultProviders } from "@connect2ic/core/providers";
-import { createClient } from "@connect2ic/core";
-import { Connect2ICProvider } from "@connect2ic/react";
-import { AstroX } from "@connect2ic/core/providers/astrox"
-import { PlugWallet } from "@connect2ic/core/providers/plug-wallet"
+// import { createClient } from "@connect2ic/core";
+// import { Connect2ICProvider } from "@connect2ic/react";
+// import { AstroX } from "@connect2ic/core/providers/astrox"
+// import { PlugWallet } from "@connect2ic/core/providers/plug-wallet"
 
 import LandingPage from "./components/LandingPage";
 
-const client = createClient({
-  providers: [
-    new AstroX(),
-    new PlugWallet()
-  ],
-});
+// const client = createClient({
+//   providers: [
+//     new PlugWallet()
+//   ],
+// });
 function App() {
   return (
     <Router>
@@ -27,9 +26,9 @@ function App() {
         <Route
           path="/"
           element={
-            <Connect2ICProvider client={client}>
+            // <Connect2ICProvider client={client}>
               <LandingPage />
-            </Connect2ICProvider>
+            // </Connect2ICProvider>
           }
         />
       </Routes>
