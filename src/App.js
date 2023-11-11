@@ -5,14 +5,10 @@ import {
   Route,
   Routes,
 } from "react-router-dom";
-
-// import { defaultProviders } from "@connect2ic/core/providers";
-// import { createClient } from "@connect2ic/core";
-// import { Connect2ICProvider } from "@connect2ic/react";
-// import { AstroX } from "@connect2ic/core/providers/astrox"
-// import { PlugWallet } from "@connect2ic/core/providers/plug-wallet"
+import { UserProvider } from './components/UserContext';
 
 import LandingPage from "./components/LandingPage";
+import Dashboard from "./components/Dashboard";
 
 // const client = createClient({
 //   providers: [
@@ -21,6 +17,7 @@ import LandingPage from "./components/LandingPage";
 // });
 function App() {
   return (
+    <UserProvider>
     <Router>
       <Routes>
         <Route
@@ -31,8 +28,10 @@ function App() {
             // </Connect2ICProvider>
           }
         />
+        <Route path="/profile" element={<Dashboard/>} />
       </Routes>
     </Router>
+    </UserProvider>
   );
 }
 

@@ -14,16 +14,26 @@
 
   .stat {
     flex: 1;
+    flex-direction: row;
     text-align: center;
     padding: 10px;
     background-color: #fff;
     border: 1px solid #ccc;
     border-radius: 5px;
+    margin: 0.5rem;
   }
 
   .stat-value {
     font-size: 24px;
     font-weight: bold;
+  }
+
+  .stat-api{
+    font-size: 1.25rem;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .stat-label {
