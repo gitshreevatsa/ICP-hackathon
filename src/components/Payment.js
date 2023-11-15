@@ -46,8 +46,8 @@ function Payment() {
       amount: subscriptionFee * (10 ^ 8),
       memo: new Uint16Array(8),
     };
-    // add logic for paying the subscription fee by calling canister
-    // call the backend api : To store the payment details such as wallet address paid, amount and increment total amount for the API key, total wallets paid, total transactions
+
+    await window.ic.plug.requestTransfer(transferArgs);
     // call the call backurl with the payment details
   }
 
