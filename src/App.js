@@ -9,29 +9,27 @@ import { UserProvider } from './components/UserContext';
 
 import LandingPage from "./components/LandingPage";
 import Dashboard from "./components/Dashboard";
+import Payment from "./components/Payment";
+import Navbar from "./components/Navbar";
 
-// const client = createClient({
-//   providers: [
-//     new PlugWallet()
-//   ],
-// });
 function App() {
   return (
-    <UserProvider>
-    <Router>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            // <Connect2ICProvider client={client}>
-              <LandingPage />
-            // </Connect2ICProvider>
-          }
-        />
-        <Route path="/profile" element={<Dashboard/>} />
-      </Routes>
-    </Router>
-    </UserProvider>
+      <UserProvider>
+        <Router>
+        <Navbar/>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <LandingPage />
+              }
+            />
+            <Route path="/profile" element={<Dashboard />} />
+            <Route path="/payment/:apiKey/:walletAddress" element={<Payment />} />
+          </Routes>
+        </Router>
+      </UserProvider>
+
   );
 }
 

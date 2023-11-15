@@ -9,11 +9,6 @@ import { Principal } from "@dfinity/principal";
 
 const { AuthClient } = require("@dfinity/auth-client");
 function LandingPage() {
-  // const { isConnected, principal, activeProvider } = useConnect({
-  //   onConnect: (principal, activeProvider) => {
-  //     console.log("Connected to ", activeProvider, "with principal", principal);
-  //   },
-  // });
   const [wallet, setWallet] = useState();
   const [apiKey, setApiKey] = useState(null);
   //
@@ -31,14 +26,13 @@ function LandingPage() {
     const whitelist = [icpCanisterId];
     const publicKey = await window.ic.plug.requestConnect({ whitelist });
     console.log("Connected to ", publicKey);
-
     const icpActor = await window.ic.plug.createActor({
       canisterId: icpCanisterId,
       interfaceFactory: idlFactory,
     });
     console.log(window.ic.plug.sessionManager.sessionData.principalId);
-
-    console.log(await icpActor.icrc1_name())
+    setWallet(window.ic.plug.sessionManager.sessionData.principalId);
+    console.log(await icpActor.icrc1_name());
 
     console.log(await window.ic.plug.isConnected());
     console.log(window.ic.plug.sessionManager.sessionData);
@@ -105,69 +99,71 @@ function LandingPage() {
   }, [wallet]);
 
   return (
-    <div className="landing-page-container">
-      <h1>Payment Gateway Service on ICP</h1>
-      <p>
-        Generate an API key after connecting your wallet and filling in the
-        details.
-      </p>
-      {console.log(user)}
-      {wallet ? (
-        <div>
-          <h1>Wallet Connected</h1>
-          <p>Wallet Address: {wallet}</p>
+    <div className="landing-page">
+      <div className="landing-page-container">
+        <h1>Payment Gateway Service on ICP</h1>
+        <p>
+          Generate an API key after connecting your wallet and filling in the
+          details.
+        </p>
+        {console.log(user)}
+        {wallet ? (
+          <div>
+            <h1>Wallet Connected</h1>
+            <p>Wallet Address: {wallet}</p>
 
-          {user ? (
-            <button className="profile-button" onClick={handleClick}>
-              My Profile
+            {user ? (
+              <button className="profile-button" onClick={handleClick}>
+                My Profile
+              </button>
+            ) : (
+              <div>
+                <label>Enter Details for your customer</label>
+                <input
+                  type="text"
+                  placeholder="Enter Details for your customer"
+                  value={details}
+                  onChange={(e) => setDetails(e.target.value)}
+                  required
+                />
+                <label>Enter Subscription Fee</label>
+                <input
+                  type="number"
+                  placeholder="Enter Subscription Fee"
+                  value={subscriptionFee}
+                  onChange={(e) => setSubscriptionFee(e.target.value)}
+                  required
+                />
+                <label>Enter callback url</label>
+                <input
+                  type="text"
+                  placeholder="Enter callback url"
+                  value={callBackUrl}
+                  onChange={(e) => setCallBackUrl(e.target.value)}
+                  required
+                />
+                <div className="button-container">
+                  <button
+                    className="generate-api-key-button"
+                    onClick={registerUser}
+                  >
+                    Generate API Key
+                  </button>
+                </div>{" "}
+              </div>
+            )}
+            {error && <p className="error-message">{error}</p>}
+          </div>
+        ) : (
+          <div>
+            <h1>Connect Wallet</h1>
+            <p>Connect your wallet to continue</p>
+            <button className="connect-wallet-button" onClick={connectWallet}>
+              Connect Wallet
             </button>
-          ) : (
-            <div>
-              <label>Enter Details for your customer</label>
-              <input
-                type="text"
-                placeholder="Enter Details for your customer"
-                value={details}
-                onChange={(e) => setDetails(e.target.value)}
-                required
-              />
-              <label>Enter Subscription Fee</label>
-              <input
-                type="text"
-                placeholder="Enter Subscription Fee"
-                value={subscriptionFee}
-                onChange={(e) => setSubscriptionFee(e.target.value)}
-                required
-              />
-              <label>Enter callback url</label>
-              <input
-                type="text"
-                placeholder="Enter callback url"
-                value={callBackUrl}
-                onChange={(e) => setCallBackUrl(e.target.value)}
-                required
-              />
-              <div className="button-container">
-                <button
-                  className="generate-api-key-button"
-                  onClick={registerUser}
-                >
-                  Generate API Key
-                </button>
-              </div>{" "}
-            </div>
-          )}
-          {error && <p className="error-message">{error}</p>}
-        </div>
-      ) : (
-        <div>
-          <h1>Connect Wallet</h1>
-          <p>Connect your wallet to continue</p>
-          <button className="connect-wallet-button" onClick={connectWallet}>
-            Connect Wallet
-          </button>
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
