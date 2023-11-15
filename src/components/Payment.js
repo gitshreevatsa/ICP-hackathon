@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { idlFactory } from "./ledger.did";
+import { Principal } from "@dfinity/principal";
 
 function Payment() {
   const [wallet, setWallet] = useState(null);
@@ -16,8 +18,15 @@ function Payment() {
   });
 
   async function connectWallet() {
-    const publicKey = await window.ic.plug.requestConnect({ whitelist: [] });
+    const icpCanisterId = "ryjl3-tyaaa-aaaaa-aaaba-cai";
+    const whitelist = [icpCanisterId];
+    const publicKey = await window.ic.plug.requestConnect({ whitelist });
     console.log("Connected to ", publicKey);
+
+    const icpActor = await window.ic.plug.createActor({
+      canisterId: icpCanisterId,
+      interfaceFactory: idlFactory,
+    });
 
     console.log(await window.ic.plug.isConnected());
     console.log(window.ic.plug.sessionManager.sessionData);
@@ -32,8 +41,12 @@ function Payment() {
   }
 
   async function pay() {
-    // add logic for paying the subscription fee
-    // call the canister
+    const transferArgs = {
+      to: "WALLET ADDRESS OF THE OWNER",
+      amount: subscriptionFee * (10 ^ 8),
+      memo: new Uint16Array(8),
+    };
+    // add logic for paying the subscription fee by calling canister
     // call the backend api : To store the payment details such as wallet address paid, amount and increment total amount for the API key, total wallets paid, total transactions
     // call the call backurl with the payment details
   }

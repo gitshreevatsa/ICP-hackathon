@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./LandingPage.css";
-import hmacSHA512 from 'crypto-js/hmac-sha512';
+import hmacSHA512 from "crypto-js/hmac-sha512";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { useUser } from './UserContext';
+import { useUser } from "./UserContext";
+import { idlFactory } from "./ledger.did";
+import { Principal } from "@dfinity/principal";
 
 const { AuthClient } = require("@dfinity/auth-client");
 function LandingPage() {
@@ -12,7 +14,7 @@ function LandingPage() {
   //     console.log("Connected to ", activeProvider, "with principal", principal);
   //   },
   // });
-  const [wallet, setWallet] = useState( );
+  const [wallet, setWallet] = useState();
   const [apiKey, setApiKey] = useState(null);
   //
   const { user, updateUser } = useUser();
@@ -21,67 +23,85 @@ function LandingPage() {
   const [subscriptionFee, setSubscriptionFee] = useState(0);
   const [details, setDetails] = useState("");
   const [error, setError] = useState(""); // State for error message
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   // add logic for connecting wallet
   async function connectWallet() {
-    const publicKey = await window.ic.plug.requestConnect();
+    const icpCanisterId = "ryjl3-tyaaa-aaaaa-aaaba-cai";
+    const whitelist = [icpCanisterId];
+    const publicKey = await window.ic.plug.requestConnect({ whitelist });
     console.log("Connected to ", publicKey);
+
+    const icpActor = await window.ic.plug.createActor({
+      canisterId: icpCanisterId,
+      interfaceFactory: idlFactory,
+    });
+    console.log(window.ic.plug.sessionManager.sessionData.principalId);
+
+    console.log(await icpActor.icrc1_name())
 
     console.log(await window.ic.plug.isConnected());
     console.log(window.ic.plug.sessionManager.sessionData);
-    console.log(window.ic.plug.sessionManager.sessionData.principalId);
-    setWallet(window.ic.plug.sessionManager.sessionData.principalId);
-    {publicKey && navigate("/profile")}
+    {
+      publicKey && navigate("/profile");
+    }
   }
 
   // add logic for generating API key
-  function generateAPIKey(){
-      const randomGenerator = Math.random().toString(36).slice(2);
-      const apiKey = hmacSHA512(randomGenerator, wallet).toString();
-      console.log(apiKey);
-      setApiKey(apiKey);
+  function generateAPIKey() {
+    const randomGenerator = Math.random().toString(36).slice(2);
+    const apiKey = hmacSHA512(randomGenerator, wallet).toString();
+    console.log(apiKey);
+    setApiKey(apiKey);
   }
 
-  const registerUser = async() => {
+  const registerUser = async () => {
     if (!callBackUrl || !subscriptionFee || !details || !apiKey) {
       setError("Please fill in all required details.");
       return;
     }
     const data = {
-      walletAddress:wallet,
+      walletAddress: wallet,
       amount: subscriptionFee,
       details: details,
       callBackUrl: callBackUrl,
-      apiKey:apiKey
+      apiKey: apiKey,
+    };
+    try {
+      const res = await axios.post("http://localhost:5000/api/register", data);
+      {
+        updateUser(res?.data.user);
+      }
+      console.log(res);
+    } catch (err) {
+      console.log(err);
     }
-    try{
-      const res = await axios.post("http://localhost:5000/api/register", data)
-      {updateUser(res?.data.user)}
-      console.log(res)
-    }
-    catch(err){  
-      console.log(err)
-    }
-  }
+  };
 
-  const getKey = async() => {
-    try{
-       const res  = await axios.get(`http://localhost:5000/api/login?walletAddress=${wallet}`);
-       updateUser(res?.data.user);
-       {res?.data.exists && navigate("/profile")}
+  const getKey = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/api/login?walletAddress=${wallet}`
+      );
+      updateUser(res?.data.user);
+      {
+        res?.data.exists && navigate("/profile");
+      }
+    } catch (err) {
+      console.log(err);
     }
-    catch(err){
-       console.log(err);
-    }
-  } 
+  };
   const handleClick = () => {
-    navigate("/profile")
-  }
+    navigate("/profile");
+  };
   useEffect(() => {
     // call the backend api with wallet address and user profile
-    {wallet && getKey()}
-    {wallet && generateAPIKey()}
+    {
+      wallet && getKey();
+    }
+    {
+      wallet && generateAPIKey();
+    }
   }, [wallet]);
 
   return (
@@ -91,14 +111,16 @@ function LandingPage() {
         Generate an API key after connecting your wallet and filling in the
         details.
       </p>
-     {console.log(user)}
+      {console.log(user)}
       {wallet ? (
         <div>
           <h1>Wallet Connected</h1>
           <p>Wallet Address: {wallet}</p>
 
           {user ? (
-            <button className="profile-button" onClick={handleClick}>My Profile</button>
+            <button className="profile-button" onClick={handleClick}>
+              My Profile
+            </button>
           ) : (
             <div>
               <label>Enter Details for your customer</label>
@@ -126,7 +148,10 @@ function LandingPage() {
                 required
               />
               <div className="button-container">
-                <button className="generate-api-key-button" onClick={registerUser}>
+                <button
+                  className="generate-api-key-button"
+                  onClick={registerUser}
+                >
                   Generate API Key
                 </button>
               </div>{" "}
