@@ -6,7 +6,6 @@ import axios from "axios";
 import { useUser } from "./UserContext";
 import { idlFactory } from "./ledger.did";
 import { Principal } from "@dfinity/principal";
-
 const { AuthClient } = require("@dfinity/auth-client");
 function LandingPage() {
   // const { isConnected, principal, activeProvider } = useConnect({
@@ -43,7 +42,7 @@ function LandingPage() {
     console.log(await window.ic.plug.isConnected());
     console.log(window.ic.plug.sessionManager.sessionData);
     {
-      publicKey && navigate("/profile");
+      // publicKey && navigate("/profile");
     }
   }
 
